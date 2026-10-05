@@ -40,8 +40,9 @@
             <td>{{ $book['stok'] }}</td>
         </tr>
         <tr>
-            <th>Kategori</th>
-            <td>{{ $book['kategori'] }}</td>
+            <th>ID Kategori</th>
+            <td>{{ $book['category_id'] }}</td>
         </tr>
     </table>
 </body>
+</html>
