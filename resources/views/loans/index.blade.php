@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Daftar Peminjaman')
@@ -5,7 +6,11 @@
 @section('content')
     <h1>Daftar Peminjaman</h1>
 
-    <p><a href="{{ route('loans.create') }}" class="btn">+ Tambah Peminjaman</a></p>
+    <p>
+        <a href="{{ route('loans.create') }}" class="btn">
+            + Tambah Peminjaman
+        </a>
+    </p>
 
     <table>
         <thead>
@@ -20,35 +25,92 @@
                 <th>Aksi</th>
             </tr>
         </thead>
+
         <tbody>
             @forelse ($loans as $loan)
                 <tr>
                     <td>{{ $loan['id'] }}</td>
+
                     <td>{{ $loan['member']['nama'] }}</td>
+
                     <td>{{ $loan['user']['name'] }}</td>
+
                     <td>
                         @foreach ($loan['loanItems'] as $item)
                             {{ $item['book']['judul'] }}@if (!$loop->last), @endif
                         @endforeach
                     </td>
+
                     <td>{{ $loan['tanggal_pinjam'] }}</td>
+
                     <td>{{ $loan['tanggal_kembali'] }}</td>
-                    <td>{{ ucfirst($loan['status']) }}</td>
+
+                    {{-- Badge Status --}}
                     <td>
-                        <a href="{{ route('loans.show', $loan['id']) }}">Detail</a>
+                        @if ($loan['status'] === 'dikembalikan')
+                            <span class="badge-status badge-dikembalikan">
+                                Dikembalikan
+                            </span>
+                        @elseif ($loan['status'] === 'dipinjam')
+                            <span class="badge-status badge-dipinjam">
+                                Dipinjam
+                            </span>
+                        @elseif ($loan['status'] === 'terlambat')
+                            <span class="badge-status badge-terlambat">
+                                Terlambat
+                            </span>
+                        @endif
+                    </td>
+
+                    {{-- Tombol Aksi --}}
+                    <td>
+                        <a href="{{ route('loans.show', $loan['id']) }}">
+                            Detail
+                        </a>
+
                         |
-                        <a href="{{ route('loans.edit', $loan['id']) }}">Edit</a>
+
+                        <a href="{{ route('loans.edit', $loan['id']) }}">
+                            Edit
+                        </a>
+
+                        {{-- Tombol Kembalikan hanya untuk status dipinjam --}}
+                        @if ($loan['status'] === 'dipinjam')
+                            |
+                            <form class="inline"
+                                action="{{ route('loans.kembalikan', $loan['id']) }}"
+                                method="POST">
+
+                                @csrf
+                                @method('PUT')
+
+                                <button type="submit">
+                                    Kembalikan
+                                </button>
+                            </form>
+                        @endif
+
                         |
-                        <form class="inline" action="{{ route('loans.destroy', $loan['id']) }}" method="POST">
+
+                        <form class="inline"
+                            action="{{ route('loans.destroy', $loan['id']) }}"
+                            method="POST">
+
                             @csrf
                             @method('DELETE')
-                            <button type="submit">Hapus</button>
+
+                            <button type="submit">
+                                Hapus
+                            </button>
                         </form>
                     </td>
                 </tr>
+
             @empty
                 <tr>
-                    <td colspan="8">Belum ada data peminjaman.</td>
+                    <td colspan="8">
+                        Belum ada data peminjaman.
+                    </td>
                 </tr>
             @endforelse
         </tbody>
